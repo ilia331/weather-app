@@ -1,0 +1,459 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── PARTICLE CANVAS ── */
+#particleCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── DYNAMIC BACKGROUNDS ── */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 20px 50px;
+    transition: background 1.4s ease;
+}
+
+body.bg-clear        { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+body.bg-cloudy       { background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); }
+body.bg-fog          { background: linear-gradient(135deg, #606c88 0%, #3f4c6b 100%); }
+body.bg-rain         { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+body.bg-snow         { background: linear-gradient(135deg, #4b79a1 0%, #283e51 100%); }
+body.bg-storm        { background: linear-gradient(135deg, #1a1a2e 0%, #6f0000 100%); }
+body.bg-night-clear  { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a4d 100%); }
+body.bg-night-cloudy { background: linear-gradient(135deg, #1c1c2c 0%, #2a2a3d 100%); }
+
+/* ── LAYOUT ── */
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 22px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+/* ── SEARCH ── */
+.search-section {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+#cityInput {
+    flex: 1;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.92);
+    outline: none;
+    transition: box-shadow 0.25s;
+    color: #333;
+}
+#cityInput:focus { box-shadow: 0 0 0 3px rgba(255,255,255,0.5); }
+
+#searchBtn, #geoBtn {
+    padding: 13px 18px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+#searchBtn { background: #ff6b6b; color: white; }
+#searchBtn:hover  { transform: scale(1.07); }
+#searchBtn:disabled { opacity: 0.6; transform: none; }
+
+#geoBtn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.45);
+}
+#geoBtn:hover   { background: rgba(255,255,255,0.35); transform: scale(1.07); }
+#geoBtn:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+
+/* ── WEATHER CARD ── */
+.weather-card {
+    display: none;
+    width: 100%;
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 28px;
+    padding: 28px 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.22);
+}
+
+#cityName {
+    text-align: center;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+}
+
+/* ── ANIMATED WEATHER ICON ── */
+.weather-icon-wrap {
+    height: 105px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 6px 0 2px;
+}
+
+/* SUN */
+.wi-sun {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sun-core {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; height: 40px;
+    background: radial-gradient(circle, #fffde7, #ffca28);
+    border-radius: 50%;
+    box-shadow: 0 0 18px #ffca28, 0 0 50px rgba(255,202,40,0.45);
+    animation: sun-pulse 2.8s ease-in-out infinite;
+    z-index: 2;
+}
+.sun-rays-wrap {
+    position: absolute;
+    width: 80px; height: 80px;
+    animation: spin-slow 14s linear infinite;
+}
+.sun-ray {
+    position: absolute;
+    width: 3px; height: 12px;
+    background: linear-gradient(to bottom, rgba(255,230,60,0.95), transparent);
+    border-radius: 2px;
+    top: 3px;
+    left: calc(50% - 1.5px);
+    transform-origin: 1.5px 37px;
+}
+@keyframes sun-pulse {
+    0%,100% { box-shadow: 0 0 18px #ffca28, 0 0 50px rgba(255,202,40,0.45); transform: translate(-50%,-50%) scale(1); }
+    50% { box-shadow: 0 0 28px #ffca28, 0 0 80px rgba(255,202,40,0.6); transform: translate(-50%,-50%) scale(1.1); }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+/* PARTLY CLOUDY */
+.wi-partly {
+    position: relative;
+    width: 90px; height: 78px;
+}
+.pc-sun-wrap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+}
+.pc-sun-wrap .sun-core { width: 28px; height: 28px; }
+.pc-sun-wrap .sun-rays-wrap { width: 56px; height: 56px; }
+.pc-sun-wrap .sun-ray { top: 2px; left: calc(50% - 1.5px); transform-origin: 1.5px 26px; }
+.pc-cloud {
+    position: absolute;
+    bottom: 0; right: 0;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* CLOUD (shared shape) */
+.cloud {
+    width: 72px; height: 28px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 30px;
+    position: relative;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.12);
+}
+.cloud::before {
+    content: '';
+    position: absolute;
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 50%;
+    top: -18px; left: 8px;
+}
+.cloud::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 50%;
+    top: -13px; left: 35px;
+}
+.wi-cloud { animation: float 3.5s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+/* DARK CLOUD (storm) */
+.dark-cloud, .dark-cloud::before, .dark-cloud::after {
+    background: rgba(72,76,100,0.92) !important;
+}
+
+/* FOG */
+.wi-fog { display: flex; flex-direction: column; gap: 8px; width: 80px; }
+.fog-bar {
+    height: 5px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+    animation: fog-drift 2.8s ease-in-out infinite;
+}
+.fog-bar:nth-child(1) { width: 80px; animation-delay: 0s; }
+.fog-bar:nth-child(2) { width: 55px; animation-delay: 0.5s; }
+.fog-bar:nth-child(3) { width: 70px; animation-delay: 1s; }
+.fog-bar:nth-child(4) { width: 45px; animation-delay: 1.5s; }
+@keyframes fog-drift {
+    0%,100% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 0.85; transform: translateX(10px); }
+}
+
+/* RAIN */
+.wi-rain, .wi-snow, .wi-storm {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.drops { display: flex; gap: 8px; }
+.drops span {
+    display: block;
+    width: 3px; height: 13px;
+    background: rgba(130,200,255,0.85);
+    border-radius: 0 0 3px 3px;
+    animation: drop-fall 0.85s ease-in infinite;
+}
+.drops span:nth-child(2) { animation-delay: 0.17s; }
+.drops span:nth-child(3) { animation-delay: 0.34s; }
+.drops span:nth-child(4) { animation-delay: 0.51s; }
+.drops span:nth-child(5) { animation-delay: 0.68s; }
+@keyframes drop-fall {
+    0% { transform: translateY(-4px); opacity: 0; }
+    35% { opacity: 1; }
+    100% { transform: translateY(12px); opacity: 0; }
+}
+
+/* SNOW */
+.flakes { display: flex; gap: 9px; }
+.flakes span {
+    font-size: 16px;
+    color: rgba(215,240,255,0.95);
+    filter: drop-shadow(0 0 4px rgba(180,225,255,0.8));
+    animation: flake-fall 1.3s ease-in-out infinite;
+    display: inline-block;
+}
+.flakes span:nth-child(2) { animation-delay: 0.33s; }
+.flakes span:nth-child(3) { animation-delay: 0.66s; }
+.flakes span:nth-child(4) { animation-delay: 0.99s; }
+@keyframes flake-fall {
+    0% { transform: translateY(-5px) rotate(0deg); opacity: 0; }
+    35% { opacity: 1; }
+    100% { transform: translateY(14px) rotate(180deg); opacity: 0; }
+}
+
+/* STORM */
+.bolt {
+    font-size: 26px;
+    animation: bolt-flash 2.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px #ffe066);
+    margin: -2px 0 1px;
+}
+@keyframes bolt-flash {
+    0%,84%,100% { opacity: 1; }
+    86% { opacity: 0.05; }
+    88% { opacity: 1; }
+    90% { opacity: 0.05; }
+    92% { opacity: 1; }
+}
+
+/* ── WEATHER DESCRIPTION + TEMP ── */
+.weather-desc {
+    text-align: center;
+    color: rgba(255,255,255,0.8);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.temp-section {
+    text-align: center;
+    color: white;
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 22px;
+    letter-spacing: -3px;
+}
+.temp-unit { font-size: 2.4rem; font-weight: 400; letter-spacing: 0; opacity: 0.85; }
+
+/* ── DETAILS ── */
+.details {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+.detail-item {
+    flex: 1;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 14px 8px;
+    border-radius: 18px;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 5px;
+    transition: background 0.2s;
+}
+.detail-item:hover { background: rgba(255,255,255,0.22); }
+.detail-label { font-size: 0.72rem; color: rgba(255,255,255,0.65); }
+.detail-value { font-size: 1.1rem; font-weight: 700; color: white; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+/* ── SHOULD I ── */
+.should-i-section {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 22px;
+}
+.should-i-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+.should-card {
+    padding: 13px 6px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.12);
+    cursor: default;
+    transition: transform 0.2s, background 0.2s;
+}
+.should-card:hover { transform: translateY(-3px); }
+.should-card.yes { background: rgba(46,213,115,0.18); border-color: rgba(46,213,115,0.35); }
+.should-card.no  { background: rgba(255,107,107,0.18); border-color: rgba(255,107,107,0.35); }
+.should-icon  { font-size: 1.5rem; margin-bottom: 4px; }
+.should-q     { font-size: 0.65rem; color: rgba(255,255,255,0.65); margin-bottom: 5px; line-height: 1.3; }
+.should-answer{ font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 3px; }
+.should-note  { font-size: 0.6rem; color: rgba(255,255,255,0.55); line-height: 1.3; }
+
+/* ── CHART ── */
+.chart-section {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 22px;
+}
+#tempChart { width: 100% !important; max-height: 155px; }
+
+/* ── PHOTOGRAPHY TIMES ── */
+.photo-times {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 22px;
+}
+.time-grid { display: flex; gap: 10px; }
+.time-box {
+    flex: 1; padding: 13px 10px;
+    border-radius: 16px; text-align: center; color: white;
+    transition: transform 0.25s;
+}
+.time-box:hover { transform: scale(1.04); }
+.time-box span  { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; opacity: 0.85; }
+.time-box p     { font-weight: 700; font-size: 0.95rem; }
+.golden { background: linear-gradient(45deg, #f39c12, #e67e22); box-shadow: 0 4px 18px rgba(230,126,34,0.3); }
+.blue   { background: linear-gradient(45deg, #2980b9, #2c3e50); box-shadow: 0 4px 18px rgba(44,62,80,0.35); }
+
+/* ── RADAR ── */
+.radar-section { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.12); }
+#radarMap {
+    width: 100%; height: 280px;
+    border-radius: 18px; overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+/* ── QUICK CITY BUTTONS ── */
+.quick-cities {
+    display: flex; justify-content: center;
+    gap: 12px; margin-top: 20px;
+    width: 100%; flex-wrap: wrap;
+}
+.quick-btn {
+    position: relative;
+    padding: 13px 26px;
+    border: 2px solid;
+    border-radius: 14px;
+    font-size: 1rem; font-weight: 800;
+    cursor: pointer; overflow: hidden;
+    transition: all 0.35s ease;
+    min-width: 120px; height: 58px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    z-index: 1;
+}
+.quick-btn::before {
+    content: ""; position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.35s; z-index: -2;
+}
+.quick-btn::after {
+    content: ""; position: absolute;
+    bottom: -100%; left: 50%; transform: translateX(-50%);
+    width: 90%; height: 90%;
+    background-size: contain; background-repeat: no-repeat; background-position: center bottom;
+    opacity: 0; transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275); z-index: -1;
+}
+.quick-btn:hover { transform: translateY(-4px); border-color: white; }
+.quick-btn:hover::before { opacity: 1; }
+.quick-btn:hover::after  { bottom: 0; opacity: 0.65; }
+
+.quick-btn.sofia  { border-color: #FFD700; color: #FFD700; }
+.quick-btn.sofia::before { background: linear-gradient(to bottom, #FF8C00, #B8860B); }
+.quick-btn.sofia::after  { background-image: url('https://cdn-icons-png.flaticon.com/512/11516/11516421.png'); }
+
+.quick-btn.varna  { border-color: #00d2ff; color: #00d2ff; }
+.quick-btn.varna::before { background: linear-gradient(to bottom, #00d2ff, #3a7bd5); }
+.quick-btn.varna::after  { background-image: url('https://img.icons8.com/color/144/lighthouse.png'); }
+
+.quick-btn.burgas { border-color: #ff9a9e; color: #ff9a9e; }
+.quick-btn.burgas::before { background: linear-gradient(to bottom, #ff9a9e, #fecfef); }
+.quick-btn.burgas::after  { background-image: url('https://img.icons8.com/color/144/bridge.png'); }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+    h1 { font-size: 1.7rem; }
+    .temp-section { font-size: 4rem; }
+    .details { flex-direction: column; }
+    .should-i-grid { grid-template-columns: repeat(2, 1fr); }
+    .quick-btn { min-width: 100px; padding: 11px 18px; }
+}

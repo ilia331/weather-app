@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="container">
+    <h1>Weather App</h1>
+
+    <div class="search-section">
+        <input type="text" id="cityInput" placeholder="Enter city name..." />
+        <button id="searchBtn">🔍</button>
+        <button id="geoBtn" title="Use my location">📍</button>
+    </div>
+
+    <div id="weatherCard" class="weather-card">
+
+        <h2 id="cityName"></h2>
+
+        <!-- Animated Icon -->
+        <div class="weather-icon-wrap" id="weatherIconWrap"></div>
+
+        <p id="weatherDesc" class="weather-desc"></p>
+
+        <div class="temp-section">
+            <span id="temperature">--</span><span class="temp-unit">°C</span>
+        </div>
+
+        <div class="details">
+            <div class="detail-item">
+                <span class="detail-label">💧 Humidity</span>
+                <span class="detail-value" id="humidity">--%</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">💨 Wind</span>
+                <span class="detail-value" id="windSpeed">-- km/h</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">🌡️ Feels Like</span>
+                <span class="detail-value" id="feelsLike">--°C</span>
+            </div>
+        </div>
+
+        <!-- Should I? -->
+        <div class="should-i-section">
+            <h4 class="section-title">Quick Forecast 🎯</h4>
+            <div class="should-i-grid" id="shouldICards"></div>
+        </div>
+
+        <!-- Hourly Chart -->
+        <div class="chart-section">
+            <h4 class="section-title">Today's Temperature 📈</h4>
+            <canvas id="tempChart"></canvas>
+        </div>
+
+        <!-- Photography Times -->
+        <div class="photo-times">
+            <h4 class="section-title">Photography Hours 📸</h4>
+            <div class="time-grid">
+                <div class="time-box golden">
+                    <span>Golden Hour</span>
+                    <p id="goldenTime">--:--</p>
+                </div>
+                <div class="time-box blue">
+                    <span>Blue Hour</span>
+                    <p id="blueTime">--:--</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Radar -->
+        <div class="radar-section">
+            <h4 class="section-title">Live Radar 🛰️</h4>
+            <div id="radarMap"></div>
+        </div>
+
+    </div>
+
+    <div class="quick-cities">
+        <button class="quick-btn sofia" data-city="Sofia">Sofia</button>
+        <button class="quick-btn varna" data-city="Varna">Varna</button>
+        <button class="quick-btn burgas" data-city="Burgas">Burgas</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
