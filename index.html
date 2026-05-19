@@ -15,14 +15,20 @@
     <h1>Weather App</h1>
 
     <div class="search-section">
-        <input type="text" id="cityInput" placeholder="Enter city name..." />
+        <div class="input-wrap">
+            <input type="text" id="cityInput" placeholder="Enter city name..." />
+            <ul class="autocomplete-list" id="autocompleteList"></ul>
+        </div>
         <button id="searchBtn">🔍</button>
         <button id="geoBtn" title="Use my location">📍</button>
     </div>
 
     <div id="weatherCard" class="weather-card">
 
-        <h2 id="cityName"></h2>
+        <div class="card-header">
+            <h2 id="cityName"></h2>
+            <button class="share-btn" id="shareBtn" title="Share weather">🔗</button>
+        </div>
 
         <!-- Animated Icon -->
         <div class="weather-icon-wrap" id="weatherIconWrap"></div>
@@ -45,6 +51,29 @@
             <div class="detail-item">
                 <span class="detail-label">🌡️ Feels Like</span>
                 <span class="detail-value" id="feelsLike">--°C</span>
+            </div>
+        </div>
+
+        <!-- Wind Compass -->
+        <div class="compass-section">
+            <h4 class="section-title">Wind Direction 🧭</h4>
+            <div class="compass-wrap">
+                <div class="compass-disc">
+                    <span class="cl cl-n">N</span>
+                    <span class="cl cl-e">E</span>
+                    <span class="cl cl-s">S</span>
+                    <span class="cl cl-w">W</span>
+                    <div class="compass-needle" id="compassNeedle">
+                        <div class="needle-n"></div>
+                        <div class="needle-s"></div>
+                    </div>
+                    <div class="compass-dot"></div>
+                </div>
+                <div class="compass-info">
+                    <p class="ci-cardinal" id="windDirCard">--</p>
+                    <p class="ci-deg" id="windDirDeg">--°</p>
+                    <p class="ci-label">wind from</p>
+                </div>
             </div>
         </div>
 

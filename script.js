@@ -361,6 +361,9 @@ function updateUI(location, data) {
     else if (code >= 95)                                    pMode = 'storm';
     startParticles(pMode);
 
+    // Compass
+    updateCompass(current.winddirection);
+
     // Should I
     updateShouldI(code, temp, current.windspeed, data.hourly.relativehumidity_2m[hourIdx]);
 
@@ -442,5 +445,89 @@ quickButtons.forEach(btn => btn.addEventListener('click', () => {
     cityInput.value = city;
     fetchWeather(city);
 }));
+
+// ─────────────────────────────────────────────
+// CITY AUTOCOMPLETE
+// ─────────────────────────────────────────────
+const autocompleteList = document.getElementById('autocompleteList');
+let acTimeout;
+
+cityInput.addEventListener('input', () => {
+    const q = cityInput.value.trim();
+    clearTimeout(acTimeout);
+    if (q.length < 2) { hideAC(); return; }
+    acTimeout = setTimeout(() => fetchAC(q), 300);
+});
+
+async function fetchAC(query) {
+    try {
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6`);
+        const data = await res.json();
+        if (!data.results?.length) { hideAC(); return; }
+        showAC(data.results);
+    } catch { hideAC(); }
+}
+
+function showAC(results) {
+    autocompleteList.innerHTML = results.map(r => `
+        <li class="ac-item" data-name="${r.name}">
+            <span class="ac-city">${r.name}${r.admin1 ? `, ${r.admin1}` : ''}</span>
+            <span class="ac-country">${r.country_code?.toUpperCase() || ''}</span>
+        </li>
+    `).join('');
+    autocompleteList.style.display = 'block';
+
+    autocompleteList.querySelectorAll('.ac-item').forEach(item => {
+        item.addEventListener('mousedown', e => {
+            e.preventDefault();
+            const name = item.getAttribute('data-name');
+            cityInput.value = name;
+            hideAC();
+            fetchWeather(name);
+        });
+    });
+}
+
+function hideAC() { autocompleteList.style.display = 'none'; }
+cityInput.addEventListener('blur', () => setTimeout(hideAC, 150));
+document.addEventListener('click', e => { if (!e.target.closest('.search-section')) hideAC(); });
+
+// ─────────────────────────────────────────────
+// WIND COMPASS
+// ─────────────────────────────────────────────
+function getCardinal(deg) {
+    const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    return dirs[Math.round(deg / 22.5) % 16];
+}
+
+function updateCompass(deg) {
+    document.getElementById('compassNeedle').style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+    document.getElementById('windDirCard').textContent = getCardinal(deg);
+    document.getElementById('windDirDeg').textContent  = `${deg}°`;
+}
+
+// ─────────────────────────────────────────────
+// SHARE BUTTON
+// ─────────────────────────────────────────────
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    const btn  = document.getElementById('shareBtn');
+    const city = document.getElementById('cityName').textContent;
+    const text =
+        `📍 ${city}\n` +
+        `🌡 ${tempElem.textContent}°C · ${descElem.textContent}\n` +
+        `✨ Feels like ${feelsLikeElem.textContent}\n` +
+        `💧 Humidity: ${humidityElem.textContent}\n` +
+        `💨 Wind: ${windElem.textContent}`;
+
+    try {
+        if (navigator.share) {
+            await navigator.share({ title: `Weather in ${city}`, text });
+        } else {
+            await navigator.clipboard.writeText(text);
+            btn.textContent = '✅';
+            setTimeout(() => { btn.textContent = '🔗'; }, 2200);
+        }
+    } catch { /* user cancelled */ }
+});
 
 window.onload = () => fetchWeather('Sofia');

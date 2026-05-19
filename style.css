@@ -449,6 +449,161 @@ h1 {
 .quick-btn.burgas::before { background: linear-gradient(to bottom, #ff9a9e, #fecfef); }
 .quick-btn.burgas::after  { background-image: url('https://img.icons8.com/color/144/bridge.png'); }
 
+/* ── CARD HEADER + SHARE ── */
+.card-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+.share-btn {
+    position: absolute;
+    right: 0;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+.share-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+
+/* ── AUTOCOMPLETE ── */
+.input-wrap {
+    flex: 1;
+    position: relative;
+}
+.input-wrap #cityInput { width: 100%; }
+
+.autocomplete-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 7px);
+    left: 0; right: 0;
+    background: rgba(255,255,255,0.97);
+    border-radius: 16px;
+    list-style: none;
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+}
+.ac-item {
+    padding: 11px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    transition: background 0.15s;
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: rgba(102,126,234,0.1); }
+.ac-city    { font-size: 0.92rem; font-weight: 600; color: #222; }
+.ac-country { font-size: 0.78rem; color: #888; font-weight: 500; }
+
+/* ── WIND COMPASS ── */
+.compass-section {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 22px;
+}
+.compass-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+.compass-disc {
+    position: relative;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+/* Tick marks via box-shadow */
+.compass-disc::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Cardinal labels */
+.cl {
+    position: absolute;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.cl-n { top: 5px;  left: 50%; transform: translateX(-50%); }
+.cl-s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.cl-e { right: 7px; top: 50%; transform: translateY(-50%); }
+.cl-w { left: 7px;  top: 50%; transform: translateY(-50%); }
+
+/* Needle */
+.compass-needle {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    transform-origin: center center;
+    transition: transform 1s cubic-bezier(0.34, 1.4, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.needle-n {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 34px solid rgba(255, 70, 70, 0.92);
+    filter: drop-shadow(0 0 4px rgba(255,70,70,0.5));
+}
+.needle-s {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 34px solid rgba(255,255,255,0.55);
+}
+.compass-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: white;
+    z-index: 2;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* Info beside compass */
+.compass-info { text-align: center; }
+.ci-cardinal {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.ci-deg {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 4px;
+}
+.ci-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.45);
+}
+
 /* ── MOBILE ── */
 @media (max-width: 480px) {
     h1 { font-size: 1.7rem; }
