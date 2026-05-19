@@ -35,8 +35,16 @@
 
         <p id="weatherDesc" class="weather-desc"></p>
 
-        <div class="temp-section">
-            <span id="temperature">--</span><span class="temp-unit">°C</span>
+        <div class="temp-row">
+            <div class="temp-section">
+                <span id="temperature">--</span><span class="temp-unit">°C</span>
+            </div>
+            <div class="thermometer">
+                <div class="thermo-tube">
+                    <div class="thermo-fill" id="thermoFill"></div>
+                </div>
+                <div class="thermo-bulb" id="thermoBulb"></div>
+            </div>
         </div>
 
         <div class="details">
@@ -110,6 +118,29 @@
             <div id="radarMap"></div>
         </div>
 
+    </div>
+
+    <!-- Skeleton loader -->
+    <div id="skeletonCard" class="skeleton-card">
+        <div class="sk sk-title"></div>
+        <div class="sk sk-icon"></div>
+        <div class="sk sk-desc"></div>
+        <div class="sk sk-temp"></div>
+        <div class="sk-row">
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+        </div>
+        <div class="sk sk-block"></div>
+        <div class="sk-row">
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+            <div class="sk sk-chip"></div>
+        </div>
+        <div class="sk sk-block"></div>
     </div>
 
     <div class="quick-cities">

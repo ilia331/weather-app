@@ -233,6 +233,44 @@ function updateShouldI(code, temp, wind, humidity) {
 }
 
 // ─────────────────────────────────────────────
+// THERMOMETER
+// ─────────────────────────────────────────────
+function updateThermometer(temp) {
+    const pct = Math.min(100, Math.max(0, ((temp + 20) / 65) * 100));
+    const color =
+        temp < 0  ? '#00b4d8' :
+        temp < 10 ? '#48cae4' :
+        temp < 20 ? '#06d6a0' :
+        temp < 30 ? '#f77f00' : '#ef233c';
+
+    const fill = document.getElementById('thermoFill');
+    const bulb = document.getElementById('thermoBulb');
+    fill.style.height = `${pct}%`;
+    fill.style.backgroundColor = color;
+    bulb.style.backgroundColor = color;
+    bulb.style.boxShadow = `0 0 10px ${color}99`;
+}
+
+// ─────────────────────────────────────────────
+// SKELETON + TRANSITION HELPERS
+// ─────────────────────────────────────────────
+const skeletonCard = document.getElementById('skeletonCard');
+
+function showSkeleton() { skeletonCard.style.display = 'block'; }
+function hideSkeleton() { skeletonCard.style.display = 'none'; }
+function sleep(ms)      { return new Promise(r => setTimeout(r, ms)); }
+
+function cardFadeIn() {
+    weatherCard.style.opacity    = '0';
+    weatherCard.style.transform  = 'translateY(14px) scale(0.98)';
+    weatherCard.style.display    = 'block';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        weatherCard.style.opacity   = '1';
+        weatherCard.style.transform = 'translateY(0) scale(1)';
+    }));
+}
+
+// ─────────────────────────────────────────────
 // WEATHER DESCRIPTIONS
 // ─────────────────────────────────────────────
 const weatherDescriptions = {
@@ -282,8 +320,18 @@ async function fetchWeather(cityOverride, coords) {
     const city = cityOverride || cityInput.value.trim();
     if (!city && !coords) return;
 
+    // ── FADE OUT existing card ──
+    const wasVisible = weatherCard.style.display === 'block';
+    if (wasVisible) {
+        weatherCard.style.opacity   = '0';
+        weatherCard.style.transform = 'translateY(14px) scale(0.98)';
+        await sleep(370);
+        weatherCard.style.display = 'none';
+    }
+
+    showSkeleton();
     searchBtn.textContent = '⏳';
-    searchBtn.disabled = true;
+    searchBtn.disabled    = true;
 
     try {
         let latitude, longitude, displayName;
@@ -311,14 +359,25 @@ async function fetchWeather(cityOverride, coords) {
             `&timezone=auto`
         );
         const wd = await wr.json();
+
+        hideSkeleton();
         updateUI(displayName, wd);
         initRadar(latitude, longitude);
 
+        // ── FADE IN new card ──
+        cardFadeIn();
+
     } catch (err) {
+        hideSkeleton();
+        if (wasVisible) {
+            weatherCard.style.display   = 'block';
+            weatherCard.style.opacity   = '1';
+            weatherCard.style.transform = 'translateY(0) scale(1)';
+        }
         alert(err.message);
     } finally {
         searchBtn.textContent = '🔍';
-        searchBtn.disabled = false;
+        searchBtn.disabled    = false;
     }
 }
 
@@ -361,6 +420,9 @@ function updateUI(location, data) {
     else if (code >= 95)                                    pMode = 'storm';
     startParticles(pMode);
 
+    // Thermometer
+    updateThermometer(temp);
+
     // Compass
     updateCompass(current.winddirection);
 
@@ -369,8 +431,6 @@ function updateUI(location, data) {
 
     // Chart
     updateChart(data.hourly, hourIdx);
-
-    weatherCard.style.display = 'block';
 }
 
 // ─────────────────────────────────────────────
