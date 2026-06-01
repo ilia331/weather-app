@@ -1,0 +1,14 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backups
+*.bak
+
+# Editor directories
+.vscode/
+.idea/
+
+# Env files (never commit keys)
+.env
+.env.local

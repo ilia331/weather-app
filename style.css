@@ -590,7 +590,8 @@ h1 {
     transition: background 0.15s;
 }
 .ac-item:last-child { border-bottom: none; }
-.ac-item:hover { background: rgba(102,126,234,0.1); }
+.ac-item:hover,
+.ac-item.ac-selected { background: rgba(102,126,234,0.18); }
 .ac-city    { font-size: 0.92rem; font-weight: 600; color: #222; }
 .ac-country { font-size: 0.78rem; color: #888; font-weight: 500; }
 
@@ -691,6 +692,29 @@ h1 {
     text-transform: uppercase;
     letter-spacing: 1px;
     color: rgba(255,255,255,0.45);
+}
+
+/* ── ERROR BANNER ── */
+@keyframes slide-down {
+    from { transform: translateY(-14px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+.error-banner {
+    display: none;
+    width: 100%;
+    background: rgba(239, 68, 68, 0.88);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+    animation: slide-down 0.25s ease;
+}
+.error-banner.visible {
+    display: block;
 }
 
 /* ── MOBILE ── */

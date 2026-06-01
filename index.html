@@ -14,16 +14,20 @@
 <div class="container">
     <h1>Weather App</h1>
 
+    <div id="errorBanner" class="error-banner" role="alert" aria-live="assertive"></div>
+
     <div class="search-section">
         <div class="input-wrap">
-            <input type="text" id="cityInput" placeholder="Enter city name..." />
-            <ul class="autocomplete-list" id="autocompleteList"></ul>
+            <input type="text" id="cityInput" placeholder="Enter city name..."
+                   aria-label="Търсене на град" autocomplete="off" />
+            <ul class="autocomplete-list" id="autocompleteList"
+                role="listbox" aria-label="Предложения за градове"></ul>
         </div>
-        <button id="searchBtn">🔍</button>
-        <button id="geoBtn" title="Use my location">📍</button>
+        <button id="searchBtn" aria-label="Търси">🔍</button>
+        <button id="geoBtn" title="Use my location" aria-label="Използвай моето местоположение">📍</button>
     </div>
 
-    <div id="weatherCard" class="weather-card">
+    <div id="weatherCard" class="weather-card" aria-live="polite">
 
         <div class="card-header">
             <h2 id="cityName"></h2>
@@ -63,7 +67,7 @@
         </div>
 
         <!-- Wind Compass -->
-        <div class="compass-section">
+        <div class="compass-section" id="compassSection">
             <h4 class="section-title">Wind Direction 🧭</h4>
             <div class="compass-wrap">
                 <div class="compass-disc">
@@ -152,6 +156,6 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
