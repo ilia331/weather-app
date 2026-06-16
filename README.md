@@ -7,7 +7,7 @@
 
 ---
 
-[![Live Preview](https://voluble-paletas-57ec84.netlify.app)
+[Live Preview](https://voluble-paletas-57ec84.netlify.app)
 
 ## 📋 Съдържание
 
