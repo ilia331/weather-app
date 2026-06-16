@@ -1,17 +1,9 @@
-// ─────────────────────────────────────────────
-// CHART — почасова температурна диаграма
-// ─────────────────────────────────────────────
-
 let tempChart;
 
-/**
- * Намира индекса на текущия час в масива с часови данни.
- * @param {string[]} times
- * @returns {number}
- */
+// Finds the index for the current hour inside the API hourly array.
 export function getCurrentHourIndex(times) {
-    const now    = new Date();
-    const pad    = n => String(n).padStart(2, '0');
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
     const target =
         `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
         `T${pad(now.getHours())}:00`;
@@ -19,19 +11,21 @@ export function getCurrentHourIndex(times) {
     return idx === -1 ? now.getHours() : idx;
 }
 
-/**
- * Рисува линейна диаграма с температурите за следващите 24 часа.
- * @param {{ time: string[], temperature_2m: number[] }} hourly
- * @param {number} startIdx
- */
-export function updateChart(hourly, startIdx) {
+function cToF(temp) {
+    return (temp * 9 / 5) + 32;
+}
+
+// Draws the next 24 hours of temperature data in the selected unit.
+export function updateChart(hourly, startIdx, unit = 'C') {
     const labels = hourly.time.slice(startIdx, startIdx + 24).map(t => t.slice(11, 16));
-    const temps  = hourly.temperature_2m.slice(startIdx, startIdx + 24);
+    const temps = hourly.temperature_2m
+        .slice(startIdx, startIdx + 24)
+        .map(temp => Math.round(unit === 'F' ? cToF(temp) : temp));
+    const unitLabel = `°${unit}`;
 
     const ctx = document.getElementById('tempChart').getContext('2d');
     if (tempChart) tempChart.destroy();
 
-    // Chart е глобална CDN библиотека
     tempChart = new window.Chart(ctx, {
         type: 'line',
         data: {
@@ -50,16 +44,16 @@ export function updateChart(hourly, startIdx) {
             responsive: true,
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: c => `${c.raw}°C` } }
+                tooltip: { callbacks: { label: c => `${c.raw}${unitLabel}` } }
             },
             scales: {
                 x: {
                     ticks: { color: 'rgba(255,255,255,0.7)', maxTicksLimit: 8 },
-                    grid:  { color: 'rgba(255,255,255,0.08)' }
+                    grid: { color: 'rgba(255,255,255,0.08)' }
                 },
                 y: {
-                    ticks: { color: 'rgba(255,255,255,0.7)', callback: v => `${v}°C` },
-                    grid:  { color: 'rgba(255,255,255,0.08)' }
+                    ticks: { color: 'rgba(255,255,255,0.7)', callback: v => `${v}${unitLabel}` },
+                    grid: { color: 'rgba(255,255,255,0.08)' }
                 }
             }
         }

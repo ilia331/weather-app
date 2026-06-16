@@ -1,22 +1,23 @@
-// ─────────────────────────────────────────────
-// PARTICLE SYSTEM — дъжд, сняг, искри, буря
-// ─────────────────────────────────────────────
-
 const canvas = document.getElementById('particleCanvas');
-const pctx   = canvas.getContext('2d');
-let particles    = [];
+const pctx = canvas.getContext('2d');
+let particles = [];
 let particleMode = '';
 let animId;
 
+// Keeps the particle canvas matched to the browser viewport.
 function resizeCanvas() {
-    canvas.width  = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
+
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Creates one particle with properties that match the active weather mode.
 function makeParticle(mode) {
-    const w = canvas.width, h = canvas.height;
+    const w = canvas.width;
+    const h = canvas.height;
+
     if (mode === 'rain' || mode === 'storm') {
         return {
             x: Math.random() * w,
@@ -27,6 +28,7 @@ function makeParticle(mode) {
             width: Math.random() + 0.4
         };
     }
+
     if (mode === 'snow') {
         return {
             x: Math.random() * w,
@@ -38,6 +40,7 @@ function makeParticle(mode) {
             opacity: Math.random() * 0.5 + 0.25
         };
     }
+
     if (mode === 'clear') {
         return {
             x: Math.random() * w,
@@ -51,6 +54,7 @@ function makeParticle(mode) {
     }
 }
 
+// Draws and animates particles for the active weather mode.
 function drawParticles() {
     pctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -65,20 +69,26 @@ function drawParticles() {
             pctx.moveTo(p.x, p.y);
             pctx.lineTo(p.x + p.len * 0.22, p.y + p.len);
             pctx.strokeStyle = `rgba(180,215,245,${p.opacity})`;
-            pctx.lineWidth   = p.width;
+            pctx.lineWidth = p.width;
             pctx.stroke();
-            p.y += p.speed; p.x += p.speed * 0.18;
-            if (p.y - p.len > canvas.height) { p.y = -p.len; p.x = Math.random() * canvas.width; }
-
+            p.y += p.speed;
+            p.x += p.speed * 0.18;
+            if (p.y - p.len > canvas.height) {
+                p.y = -p.len;
+                p.x = Math.random() * canvas.width;
+            }
         } else if (particleMode === 'snow') {
             pctx.beginPath();
             pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             pctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
             pctx.fill();
-            p.y += p.speed; p.wobble += 0.025;
+            p.y += p.speed;
+            p.wobble += 0.025;
             p.x += Math.sin(p.wobble) * p.drift;
-            if (p.y - p.r > canvas.height) { p.y = -p.r; p.x = Math.random() * canvas.width; }
-
+            if (p.y - p.r > canvas.height) {
+                p.y = -p.r;
+                p.x = Math.random() * canvas.width;
+            }
         } else if (particleMode === 'clear') {
             pctx.beginPath();
             pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -86,16 +96,18 @@ function drawParticles() {
             pctx.fill();
             p.opacity += p.speed * p.dir;
             if (p.opacity > p.max) p.dir = -1;
-            if (p.opacity < 0) { p.dir = 1; p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height; }
+            if (p.opacity < 0) {
+                p.dir = 1;
+                p.x = Math.random() * canvas.width;
+                p.y = Math.random() * canvas.height;
+            }
         }
     }
+
     animId = requestAnimationFrame(drawParticles);
 }
 
-/**
- * Стартира система от частици.
- * @param {'rain'|'storm'|'snow'|'clear'|'none'} mode
- */
+// Starts a fresh particle animation for rain, snow, clear skies, storms, or none.
 export function startParticles(mode) {
     particleMode = mode;
     cancelAnimationFrame(animId);
@@ -104,6 +116,8 @@ export function startParticles(mode) {
     if (mode === 'none') return;
 
     const counts = { rain: 130, storm: 220, snow: 70, clear: 55 };
-    for (let i = 0; i < (counts[mode] || 0); i++) particles.push(makeParticle(mode));
+    for (let i = 0; i < (counts[mode] || 0); i++) {
+        particles.push(makeParticle(mode));
+    }
     drawParticles();
 }

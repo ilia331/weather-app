@@ -5,45 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 </head>
 <body>
-
 <canvas id="particleCanvas"></canvas>
 
-<div class="container">
+<main class="container">
     <h1>Weather App</h1>
 
     <div id="errorBanner" class="error-banner" role="alert" aria-live="assertive"></div>
 
     <div class="search-section">
         <div class="input-wrap">
-            <input type="text" id="cityInput" placeholder="Enter city name..."
-                   aria-label="Търсене на град" autocomplete="off" />
-            <ul class="autocomplete-list" id="autocompleteList"
-                role="listbox" aria-label="Предложения за градове"></ul>
+            <input type="text" id="cityInput" placeholder="Enter city name..." aria-label="Search for a city" autocomplete="off">
+            <ul class="autocomplete-list" id="autocompleteList" role="listbox" aria-label="City suggestions"></ul>
         </div>
-        <button id="searchBtn" aria-label="Търси">🔍</button>
-        <button id="geoBtn" title="Use my location" aria-label="Използвай моето местоположение">📍</button>
+        <button id="unitToggle" class="unit-toggle" type="button" aria-label="Show temperatures in Fahrenheit" title="Show Fahrenheit">&deg;F</button>
+        <button id="searchBtn" type="button" aria-label="Search">Search</button>
+        <button id="geoBtn" type="button" title="Use my location" aria-label="Use my location">Locate</button>
     </div>
 
-    <div id="weatherCard" class="weather-card" aria-live="polite">
+    <div class="history-section" id="historySection" aria-label="Recent searches">
+        <h3 class="history-title">Recent Searches</h3>
+        <div class="history-list" id="historyList"></div>
+    </div>
 
+    <section id="weatherCard" class="weather-card" aria-live="polite">
         <div class="card-header">
             <h2 id="cityName"></h2>
-            <button class="share-btn" id="shareBtn" title="Share weather">🔗</button>
+            <button class="share-btn" id="shareBtn" type="button" title="Share weather" aria-label="Share weather">Share</button>
         </div>
 
-        <!-- Animated Icon -->
         <div class="weather-icon-wrap" id="weatherIconWrap"></div>
-
         <p id="weatherDesc" class="weather-desc"></p>
 
         <div class="temp-row">
             <div class="temp-section">
-                <span id="temperature">--</span><span class="temp-unit">°C</span>
+                <span id="temperature">--</span><span class="temp-unit" id="tempUnit">&deg;C</span>
             </div>
-            <div class="thermometer">
+            <div class="thermometer" aria-hidden="true">
                 <div class="thermo-tube">
                     <div class="thermo-fill" id="thermoFill"></div>
                 </div>
@@ -53,22 +52,21 @@
 
         <div class="details">
             <div class="detail-item">
-                <span class="detail-label">💧 Humidity</span>
+                <span class="detail-label">Humidity</span>
                 <span class="detail-value" id="humidity">--%</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">💨 Wind</span>
+                <span class="detail-label">Wind</span>
                 <span class="detail-value" id="windSpeed">-- km/h</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">🌡️ Feels Like</span>
-                <span class="detail-value" id="feelsLike">--°C</span>
+                <span class="detail-label">Feels Like</span>
+                <span class="detail-value" id="feelsLike">--&deg;C</span>
             </div>
         </div>
 
-        <!-- Wind Compass -->
         <div class="compass-section" id="compassSection">
-            <h4 class="section-title">Wind Direction 🧭</h4>
+            <h4 class="section-title">Wind Direction</h4>
             <div class="compass-wrap">
                 <div class="compass-disc">
                     <span class="cl cl-n">N</span>
@@ -83,27 +81,24 @@
                 </div>
                 <div class="compass-info">
                     <p class="ci-cardinal" id="windDirCard">--</p>
-                    <p class="ci-deg" id="windDirDeg">--°</p>
+                    <p class="ci-deg" id="windDirDeg">--&deg;</p>
                     <p class="ci-label">wind from</p>
                 </div>
             </div>
         </div>
 
-        <!-- Should I? -->
         <div class="should-i-section">
-            <h4 class="section-title">Quick Forecast 🎯</h4>
+            <h4 class="section-title">Quick Forecast</h4>
             <div class="should-i-grid" id="shouldICards"></div>
         </div>
 
-        <!-- Hourly Chart -->
         <div class="chart-section">
-            <h4 class="section-title">Today's Temperature 📈</h4>
+            <h4 class="section-title">Today's Temperature</h4>
             <canvas id="tempChart"></canvas>
         </div>
 
-        <!-- Photography Times -->
         <div class="photo-times">
-            <h4 class="section-title">Photography Hours 📸</h4>
+            <h4 class="section-title">Photography Hours</h4>
             <div class="time-grid">
                 <div class="time-box golden">
                     <span>Golden Hour</span>
@@ -116,15 +111,8 @@
             </div>
         </div>
 
-        <!-- Radar -->
-        <div class="radar-section">
-            <h4 class="section-title">Live Radar 🛰️</h4>
-            <div id="radarMap"></div>
-        </div>
+    </section>
 
-    </div>
-
-    <!-- Skeleton loader -->
     <div id="skeletonCard" class="skeleton-card">
         <div class="sk sk-title"></div>
         <div class="sk sk-icon"></div>
@@ -136,25 +124,15 @@
             <div class="sk sk-chip"></div>
         </div>
         <div class="sk sk-block"></div>
-        <div class="sk-row">
-            <div class="sk sk-chip"></div>
-            <div class="sk sk-chip"></div>
-            <div class="sk sk-chip"></div>
-            <div class="sk sk-chip"></div>
-            <div class="sk sk-chip"></div>
-            <div class="sk sk-chip"></div>
-        </div>
-        <div class="sk sk-block"></div>
     </div>
 
     <div class="quick-cities">
-        <button class="quick-btn sofia" data-city="Sofia">Sofia</button>
-        <button class="quick-btn varna" data-city="Varna">Varna</button>
-        <button class="quick-btn burgas" data-city="Burgas">Burgas</button>
+        <button class="quick-btn sofia" type="button" data-city="Sofia">Sofia</button>
+        <button class="quick-btn varna" type="button" data-city="Varna">Varna</button>
+        <button class="quick-btn burgas" type="button" data-city="Burgas">Burgas</button>
     </div>
-</div>
+</main>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
